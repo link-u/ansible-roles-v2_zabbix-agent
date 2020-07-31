@@ -1,0 +1,2 @@
+UserParameter=memcache[*],echo "stats\nquit" | socat - UNIX-CONNECT:/var/run/memcached/memcached.sock | grep "STAT $1 " | cut -d' ' -f3
+UserParameter=memcache.version,echo "version\nquit" | socat - UNIX-CONNECT:/var/run/memcached/memcached.sock 2>/dev/null | grep "VERSION" | wc -l

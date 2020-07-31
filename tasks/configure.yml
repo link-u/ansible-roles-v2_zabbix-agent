@@ -1,0 +1,82 @@
+---
+# tasks/configure.yml (zabbix)
+# Prefix : zabbix
+
+- name: Edit zabbix_agentd.conf
+  lineinfile:
+    dest: /etc/zabbix/zabbix_agentd.conf
+    regexp: "{{ item.key }}="
+    line: "{{ item.key }}={{ item.value }}"
+  loop: "{{ zabbix_agent_settings | dict2items }}"
+  notify: Restart zabbix-agent
+
+- name: Create zabbix group
+  zabbix_group:
+    host_groups: ["{{ zabbix_agent_group_name }}"]
+    state: present
+    server_url: "{{ __zabbix_agent_kanshi_server_combined_info.url }}"
+    login_user: admin
+    login_password: "{{ __zabbix_agent_kanshi_server_combined_info.login_password }}"
+  run_once: true
+
+- name: Create zabbix host
+  zabbix_host:
+    host_name: "{{ inventory_hostname }}"
+    host_groups: [ "{{ zabbix_agent_group_name }}" ]
+    interfaces:
+      - dns: ""
+        ip: "{{ zabbix_agent_ipv4 }}"
+        main: 1                       # use this interface as main
+        port: 10050
+        type: 1                       # connect with ansible-agent
+        useip: 1                      # useip: true
+    link_templates: "{{ zabbix_agent_extra_templates | union(['OS Linux']) }}"
+    state: present
+    status: enabled
+    server_url: "{{ __zabbix_agent_kanshi_server_combined_info.url }}"
+    login_user: admin
+    login_password: "{{ __zabbix_agent_kanshi_server_combined_info.login_password }}"
+
+- name: Create zabbix screen for OS
+  zabbix_screen:
+    screens:
+      - screen_name: "{{ zabbix_agent_group_name }}::OS Linux"
+        host_group:  "{{ zabbix_agent_group_name }}"
+        graph_names:
+          - "CPU utilization"
+          - "CPU load"
+          - "Memory usage"
+          - "Disk I/O"
+          - "Disk space usage /"
+          - "Network traffic on {{ ansible_default_ipv4.interface | default(omit) }}"
+        graph_width: 400
+        graph_height: 100
+    server_url: "{{ __zabbix_agent_kanshi_server_combined_info.url }}"
+    login_user: admin
+    login_password: "{{ __zabbix_agent_kanshi_server_combined_info.login_password }}"
+  run_once: true
+  ignore_errors: true
+
+- name: Edit hostmacro
+  zabbix_hostmacro:
+    server_url: "{{ __zabbix_agent_kanshi_server_combined_info.url }}"
+    login_user: admin
+    login_password: "{{ __zabbix_agent_kanshi_server_combined_info.login_password }}"
+    host_name: "{{ item.1 }}"
+    macro_name: "{{ item.0.name }}"
+    macro_value: "{{ item.0.value }}"
+    state: "{{ item.0.state | default('present') }}"
+  loop: "{{ zabbix_hostmacros | subelements('hosts') }}"
+  run_once: true
+
+- import_tasks: mysql.yml
+  when: "'mysql' in (zabbix_agent_extra_templates | lower)"
+
+- import_tasks: nginx.yml
+  when: "'nginx' in (zabbix_agent_extra_templates | lower)"
+
+- import_tasks: redis.yml
+  when: "'redis' in (zabbix_agent_extra_templates | lower)"
+
+- import_tasks: memcached.yml
+  when: "'memcached' in (zabbix_agent_extra_templates| lower)"
