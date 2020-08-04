@@ -29,9 +29,6 @@ zabbix_repo_package: >-     # zabbix-4.0 の apt リポジトリ追加パッケ�
 
 
 ### conf ファイル設定 #############################################################################
-## zabbix-agent が接続する zabbix-server の情報
-zabbix_agent_kanshi_server_hostname: zabbix-kanshi
-
 ## zabbix-agent が zabbix-server にログインするための情報
 #  * サンプルなので自環境合わせて要修正
 zabbix_agent_kanshi_server_info:
