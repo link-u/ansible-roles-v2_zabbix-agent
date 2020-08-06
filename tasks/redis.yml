@@ -1,0 +1,16 @@
+---
+
+- name: Set task on crontab
+  cron:
+    name: Store redis stat
+    job: "/usr/bin/redis-cli info > /tmp/redis-stat"
+    cron_file: "/etc/cron.d/redis-stat"
+    state: present
+    user: root
+
+- name: Put UserParameter file
+  template:
+    src: userparameter_redis.conf.j2
+    dest: "{{ zabbix_agent_conf_dir }}/userparameter_redis.conf"
+    mode: "0644"
+  notify: Restart zabbix-agent

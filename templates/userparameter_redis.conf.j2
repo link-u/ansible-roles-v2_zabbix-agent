@@ -1,0 +1,3 @@
+# https://github.com/rdvn/zabbix-templates/tree/master/redis
+
+UserParameter=redis.stat[*],cat /tmp/redis-stat | grep "$1:" | cut -d":" -f2

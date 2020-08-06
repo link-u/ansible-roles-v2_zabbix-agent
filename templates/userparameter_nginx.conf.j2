@@ -1,0 +1,7 @@
+UserParameter=nginx.active_connections,curl -s localhost:10058/nginx_status | head -1 | cut -f3 -d' '
+UserParameter=nginx.accepted_connections,curl -s localhost:10058/nginx_status | grep -Ev '[a-zA-Z]' | cut -f2 -d' '
+UserParameter=nginx.handled_connections,curl -s localhost:10058/nginx_status | grep -Ev '[a-zA-Z]' | cut -f3 -d' '
+UserParameter=nginx.handled_requests,curl -s localhost:10058/nginx_status | grep -Ev '[a-zA-Z]' | cut -f4 -d' '
+UserParameter=nginx.reading,curl -s localhost:10058/nginx_status | tail -1 | cut -f2 -d' '
+UserParameter=nginx.writing,curl -s localhost:10058/nginx_status | tail -1 | cut -f4 -d' '
+UserParameter=nginx.waiting,curl -s localhost:10058/nginx_status | tail -1 | cut -f6 -d' '

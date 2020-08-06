@@ -1,0 +1,8 @@
+---
+
+- name: Put UserParameter file
+  template:
+    src: userparameter_memcached.conf.j2
+    dest: "{{ zabbix_agent_conf_dir }}/userparameter_memcached.conf"
+    mode: "0644"
+  notify: Restart zabbix-agent

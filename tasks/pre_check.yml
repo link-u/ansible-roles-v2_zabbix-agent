@@ -1,0 +1,20 @@
+---
+# tasks/pre_check.yml (zabbix-agent)
+# Prefix : zabbix_agent
+
+- name: Check for deleted variables
+  shell: >-
+    echo "[WARNING]: 以下の変数は削除されました. 以下の URL を確認してください. @y_hashida";
+    echo "    https://github.com/link-u/ansible-roles-v2_zabbix-agent/blob/master/README.md#削除された変数の一覧";
+    {% if zabbix_repo_root is defined %}
+      echo "zabbix_repo_root";
+    {% endif %}
+
+    {% if zabbix_package_names is defined %}
+      echo "zabbix_package_names";
+    {% endif %}
+  register: __zabbix_agent_check_deleted_vars
+  check_mode: no
+  changed_when:
+    - (__zabbix_agent_check_deleted_vars.stdout_lines | length) != 2
+  notify: "Print warning for zabbix-agent (Check for deleted variables)"

@@ -1,0 +1,41 @@
+---
+
+- name: Create a user for zabbix
+  mysql_user:
+    name: "{{ zabbix_agent_mysql_user_name }}"
+    password: "{{ zabbix_agent_mysql_password }}"
+    priv: "*.*:PROCESS"
+    login_user: root
+    login_password: "{{ zabbix_agent_mysql_root_password }}"
+    login_unix_socket: "{{ zabbix_agent_mysql_socket }}"
+    login_host: "localhost"
+  run_once: "{{ pxc_is_clustered | default(false) }}"
+
+- name: Put mysql user info on kanshi server
+  template:
+    src: zabbix_my.cnf.j2
+    dest: "{{ zabbix_agent_mysql_conf_file }}"
+    mode: "0644"
+  notify: Restart zabbix-agent
+
+- name: Put UserParamater file
+  template:
+    src: userparameter_mysql.conf.j2
+    dest: "{{ zabbix_agent_conf_dir }}/userparameter_mysql.conf"
+    mode: "0644"
+  notify: Restart zabbix-agent
+
+- name: Create zabbix screen for Mysql
+  zabbix_screen:
+    screens:
+      - screen_name: "{{ zabbix_agent_group_name }}::Mysql"
+        host_group: "{{ zabbix_agent_group_name }}"
+        graph_names:
+          - "Mysql queries per second"
+          - "Mysql operations"
+        graph_width: 400
+        graph_height: 100
+    server_url: "{{ __zabbix_agent_kanshi_server_combined_info.url }}"
+    login_user: admin
+    login_password: "{{ __zabbix_agent_kanshi_server_combined_info.login_password }}"
+  run_once: yes

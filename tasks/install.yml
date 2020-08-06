@@ -1,0 +1,32 @@
+---
+# tasks/install.yml (zabbix)
+# Prefix : zabbix
+
+- name: Add apt repository for zabbix
+  apt:
+    deb: "{{ zabbix_repo_package }}"
+  register: __zabbix_add_apt_repo
+
+- name: Update apt repository
+  apt:
+    update_cache: yes
+  when: __zabbix_add_apt_repo.changed | bool
+
+- name: Install prerequirements
+  apt:
+    name: "{{ zabbix_install_packages }}"
+    state: latest
+
+- name: Install zabbix-agent
+  apt:
+    name: "zabbix-agent"
+    state: latest
+
+- name: Ensure zabbix-agent launches on boot
+  systemd:
+    name: zabbix-agent.service
+    enabled: yes
+
+- name: Install zabbix-api library
+  pip:
+    name: zabbix-api

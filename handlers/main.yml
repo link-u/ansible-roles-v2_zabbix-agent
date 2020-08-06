@@ -1,0 +1,14 @@
+---
+# handlers/main.yml (zabbix-agent)
+# Prefix : zabbix_agent
+
+- name: Restart zabbix-agent
+  systemd:
+    name: zabbix-agent.service
+    state: restarted
+
+- name: "Print warning for zabbix-agent (Check for deleted variables)"
+  debug:
+    msg: "{{ __zabbix_agent_check_deleted_vars.stdout_lines }}"
+  failed_when: yes
+  ignore_errors: yes
