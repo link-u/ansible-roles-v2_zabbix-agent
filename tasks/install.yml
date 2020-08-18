@@ -2,25 +2,27 @@
 # tasks/install.yml (zabbix)
 # Prefix : zabbix
 
+- name: Pre-install packages
+  apt:
+    name: "gpg"
+    state: present
+    update_cache: yes
+
 - name: Add apt repository for zabbix
   apt:
     deb: "{{ zabbix_repo_package }}"
-  register: __zabbix_add_apt_repo
-
-- name: Update apt repository
-  apt:
-    update_cache: yes
-  when: __zabbix_add_apt_repo.changed | bool
 
 - name: Install prerequirements
   apt:
     name: "{{ zabbix_install_packages }}"
-    state: latest
+    update_cache: True
+    state: present
 
 - name: Install zabbix-agent
   apt:
     name: "zabbix-agent"
-    state: latest
+    update_cache: True
+    state: present
 
 - name: Ensure zabbix-agent launches on boot
   systemd:
