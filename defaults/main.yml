@@ -20,6 +20,7 @@ zabbix_repo_package: >-     # zabbix-4.0 の apt リポジトリ追加パッケ�
 __zabbix_agent_kanshi_server_defaults_info:
   ip_address: "198.51.100.1"
   url: "http://198.51.100.1:10080"
+  login_user: "Admin"
   login_password: "default&zabbix&password"
 zabbix_agent_kanshi_server_info: {}
 __zabbix_agent_kanshi_server_combined_info: >-

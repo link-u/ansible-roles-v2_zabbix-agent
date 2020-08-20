@@ -18,6 +18,6 @@
         graph_width: 400
         graph_height: 100
     server_url: "{{ __zabbix_agent_kanshi_server_combined_info.url }}"
-    login_user: admin
+    login_user: "{{ __zabbix_agent_kanshi_server_combined_info.login_user }}"
     login_password: "{{ __zabbix_agent_kanshi_server_combined_info.login_password }}"
   run_once: yes
