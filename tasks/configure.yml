@@ -69,6 +69,13 @@
   loop: "{{ zabbix_hostmacros | subelements('hosts') }}"
   run_once: true
 
+- name: Register sudoer
+  template:
+    src: zabbix_sudoers.j2
+    dest: /etc/sudoers.d/zabbix
+    mode: 0440
+    validate: '/usr/sbin/visudo -cf %s'
+
 - import_tasks: mysql.yml
   when: "'mysql' in (zabbix_agent_extra_templates | lower)"
 
